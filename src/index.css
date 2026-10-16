@@ -1,0 +1,101 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Theme tokens ─────────────────────────────────────────────
+   Zinc neutrals + a single locked accent (calm blue, <80% sat). */
+:root {
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.21 0.006 285.9);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.006 285.9);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.006 285.9);
+  --muted: oklch(0.967 0.001 286.4);
+  --muted-foreground: oklch(0.552 0.016 285.9);
+  --border: oklch(0.92 0.004 286.3);
+  --input: oklch(0.92 0.004 286.3);
+  --accent: oklch(0.56 0.16 255);
+  --accent-foreground: oklch(0.985 0 0);
+  --accent-soft: oklch(0.95 0.025 255);
+  --ring: oklch(0.56 0.16 255 / 0.45);
+  --success: oklch(0.6 0.14 155);
+  --warning: oklch(0.75 0.14 75);
+  --danger: oklch(0.6 0.19 25);
+  --radius: 0.75rem;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
+}
+
+.dark {
+  --background: oklch(0.145 0.004 285.8);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.18 0.005 285.8);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.2 0.006 285.9);
+  --popover-foreground: oklch(0.97 0 0);
+  --muted: oklch(0.24 0.006 286);
+  --muted-foreground: oklch(0.705 0.015 286.1);
+  --border: oklch(1 0 0 / 0.09);
+  --input: oklch(1 0 0 / 0.12);
+  --accent: oklch(0.66 0.15 255);
+  --accent-foreground: oklch(0.15 0.01 255);
+  --accent-soft: oklch(0.3 0.06 255);
+  --ring: oklch(0.66 0.15 255 / 0.5);
+  --success: oklch(0.7 0.14 155);
+  --warning: oklch(0.8 0.14 75);
+  --danger: oklch(0.68 0.18 25);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --ease-out: var(--ease-out);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-accent-soft);
+  }
+}
