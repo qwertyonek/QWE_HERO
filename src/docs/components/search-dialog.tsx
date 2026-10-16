@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { ArrowRight, Box, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { categories } from '../data/registry'
+import { categories, componentRoute } from '../data/registry'
 import { navigate } from './use-route'
 
 interface SearchItem {
@@ -15,11 +15,11 @@ interface SearchItem {
 
 const items: SearchItem[] = categories.flatMap((c) => [
   { id: c.slug, label: c.title, hint: `${c.components.length} компонентов`, route: c.slug, isCategory: true },
-  ...c.components.map((comp) => ({
+  ...c.components.filter((comp) => comp.status === 'ready').map((comp) => ({
     id: `${c.slug}/${comp.name}`,
     label: comp.name,
     hint: c.title,
-    route: `${c.slug}/${comp.name}`,
+    route: componentRoute(c, comp),
     isCategory: false,
   })),
 ])
@@ -53,11 +53,11 @@ export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChan
     >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px]" />
-        <Dialog.Content className="fixed top-[15vh] left-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-2xl">
+        <Dialog.Content className="fixed top-[15vh] left-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border bg-overlay text-overlay-foreground shadow-2xl">
           <Dialog.Title className="sr-only">Поиск компонентов</Dialog.Title>
           <Dialog.Description className="sr-only">Введите название компонента или категории</Dialog.Description>
           <div className="flex items-center gap-2 border-b px-4">
-            <Search className="size-4 text-muted-foreground" />
+            <Search className="size-4 text-muted" />
             <input
               autoFocus
               value={query}
@@ -77,13 +77,13 @@ export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                 }
               }}
               placeholder="Найти компонент…"
-              className="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="h-12 flex-1 bg-transparent text-sm outline-none placeholder:text-muted"
             />
-            <kbd className="rounded border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">ESC</kbd>
+            <kbd className="rounded border bg-default px-1.5 font-mono text-[10px] text-muted">ESC</kbd>
           </div>
           <ul className="max-h-80 overflow-y-auto p-1.5" role="listbox">
             {results.length === 0 && (
-              <li className="px-3 py-8 text-center text-sm text-muted-foreground">Ничего не найдено</li>
+              <li className="px-3 py-8 text-center text-sm text-muted">Ничего не найдено</li>
             )}
             {results.map((item, i) => {
               const category = categories.find((c) => c.slug === item.route.split('/')[0])
@@ -97,13 +97,13 @@ export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChan
                   onClick={() => select(item)}
                   className={cn(
                     'flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm',
-                    i === active && 'bg-muted',
+                    i === active && 'bg-default',
                   )}
                 >
-                  <Icon className="size-4 text-muted-foreground" />
+                  <Icon className="size-4 text-muted" />
                   <span className="flex-1 font-medium">{item.label}</span>
-                  <span className="text-xs text-muted-foreground">{item.hint}</span>
-                  {i === active && <ArrowRight className="size-3.5 text-muted-foreground" />}
+                  <span className="text-xs text-muted">{item.hint}</span>
+                  {i === active && <ArrowRight className="size-3.5 text-muted" />}
                 </li>
               )
             })}

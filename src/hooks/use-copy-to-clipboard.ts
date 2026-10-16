@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export function useCopyToClipboard(resetAfter = 1500) {
+export function useCopyToClipboard(resetAfter = 2000) {
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
 

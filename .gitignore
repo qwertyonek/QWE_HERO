@@ -27,3 +27,7 @@ dist-ssr
 .serena/cache/
 .serena/project.local.yml
 .serena/logs/
+
+# Local reverse-engineering notes (third-party docs, not committed)
+.reference/
+.playwright-mcp/

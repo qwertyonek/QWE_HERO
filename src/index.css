@@ -1,81 +1,242 @@
 @import 'tailwindcss';
+@import './styles/base.css';
+@import './styles/ai.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── Theme tokens ─────────────────────────────────────────────
-   Zinc neutrals + a single locked accent (calm blue, <80% sat). */
+/* ── Design tokens ────────────────────────────────────────────
+   Mirrors the HeroUI v3 semantic token set (values sampled from
+   heroui.pro, light + dark). Naming:
+   surface = cards, default = neutral fills, muted = secondary text,
+   field-* = inputs, overlay = popovers, separator = dividers. */
 :root {
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0.21 0.006 285.9);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.006 285.9);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.006 285.9);
-  --muted: oklch(0.967 0.001 286.4);
-  --muted-foreground: oklch(0.552 0.016 285.9);
-  --border: oklch(0.92 0.004 286.3);
-  --input: oklch(0.92 0.004 286.3);
-  --accent: oklch(0.56 0.16 255);
-  --accent-foreground: oklch(0.985 0 0);
-  --accent-soft: oklch(0.95 0.025 255);
-  --ring: oklch(0.56 0.16 255 / 0.45);
-  --success: oklch(0.6 0.14 155);
-  --warning: oklch(0.75 0.14 75);
-  --danger: oklch(0.6 0.19 25);
-  --radius: 0.75rem;
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --background: lab(96.5432% -.0000596046 0);
+  --background-secondary: color-mix(in oklab, lab(96.5432% -.0000596046 0) 96%, lab(8.34178% .607349 -2.12998) 4%);
+  --background-tertiary: color-mix(in oklab, lab(96.5432% -.0000596046 0) 92%, lab(8.34178% .607349 -2.12998) 8%);
+  --background-inverse: lab(8.34178% .607349 -2.12998);
+  --foreground: lab(8.34178% .607349 -2.12998);
+  --surface: lab(100% 0 0);
+  --surface-foreground: lab(8.34178% .607349 -2.12998);
+  --surface-hover: color-mix(in oklab, lab(100% 0 0) 92%, lab(8.34178% .607349 -2.12998) 8%);
+  --surface-secondary: lab(94.4672% .129223 -.473213);
+  --surface-secondary-foreground: lab(8.34178% .607349 -2.12998);
+  --surface-tertiary: lab(92.7156% .129253 -.473213);
+  --surface-tertiary-foreground: lab(8.34178% .607349 -2.12998);
+  --overlay: lab(100% 0 0);
+  --overlay-foreground: lab(8.34178% .607349 -2.12998);
+  --default: lab(93.0314% .0993609 -.364041);
+  --default-foreground: lab(8.34178% .607349 -2.12998);
+  --default-hover: color-mix(in oklab, lab(93.0314% .0993609 -.364041) 96%, lab(8.34178% .607349 -2.12998) 4%);
+  --default-soft: color-mix(in oklab, lab(93.0314% .0993609 -.364041) 50%, transparent);
+  --default-soft-foreground: lab(8.34178% .607349 -2.12998);
+  --default-soft-hover: color-mix(in oklab, lab(93.0314% .0993609 -.364041) 60%, transparent);
+  --muted: lab(47.8738% 1.41454 -4.98644);
+  --border: lab(88.3653% .399351 -1.45447);
+  --border-secondary: color-mix(in oklab, lab(100% 0 0) 78%, lab(8.34178% .607349 -2.12998) 22%);
+  --border-tertiary: color-mix(in oklab, lab(100% 0 0) 66%, lab(8.34178% .607349 -2.12998) 34%);
+  --separator: lab(90.6853% .399232 -1.45452);
+  --separator-secondary: color-mix(in oklab, lab(100% 0 0) 85%, lab(8.34178% .607349 -2.12998) 15%);
+  --separator-tertiary: color-mix(in oklab, lab(100% 0 0) 81%, lab(8.34178% .607349 -2.12998) 19%);
+  --focus: lab(54.5335% 3.31545 -66.5298);
+  --link: lab(8.34178% .607349 -2.12998);
+  --accent: lab(54.5335% 3.31545 -66.5298);
+  --accent-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --accent-hover: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 90%, lab(98.9676% -.0000298023 -.0000119209) 10%);
+  --accent-soft: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 15%, transparent);
+  --accent-soft-foreground: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 70%, lab(8.34178% .607349 -2.12998) 30%);
+  --accent-soft-hover: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 20%, transparent);
+  --success: lab(71.4376% -59.4106 38.0321);
+  --success-foreground: lab(8.34178% .607349 -2.12998);
+  --success-hover: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 90%, lab(8.34178% .607349 -2.12998) 10%);
+  --success-soft: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 15%, transparent);
+  --success-soft-foreground: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 80%, lab(8.34178% .607349 -2.12998) 60%);
+  --success-soft-hover: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 20%, transparent);
+  --warning: lab(74.4448% 23.7172 71.6451);
+  --warning-foreground: lab(8.34178% .607349 -2.12998);
+  --warning-hover: color-mix(in oklab, lab(74.4448% 23.7172 71.6451) 90%, lab(8.34178% .607349 -2.12998) 10%);
+  --warning-soft: color-mix(in oklab, lab(74.4448% 23.7172 71.6451) 15%, transparent);
+  --warning-soft-foreground: color-mix(in oklab, lab(74.4448% 23.7172 71.6451) 80%, lab(8.34178% .607349 -2.12998) 70%);
+  --warning-soft-hover: color-mix(in oklab, lab(74.4448% 23.7172 71.6451) 20%, transparent);
+  --danger: lab(57.4234% 73.5589 48.0136);
+  --danger-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --danger-hover: color-mix(in oklab, lab(57.4234% 73.5589 48.0136) 90%, lab(98.9676% -.0000298023 -.0000119209) 10%);
+  --danger-soft: color-mix(in oklab, lab(57.4234% 73.5589 48.0136) 15%, transparent);
+  --danger-soft-foreground: color-mix(in oklab, lab(57.4234% 73.5589 48.0136) 70%, lab(8.34178% .607349 -2.12998) 40%);
+  --danger-soft-hover: color-mix(in oklab, lab(57.4234% 73.5589 48.0136) 20%, transparent);
+  --field-background: lab(100% 0 0);
+  --field-foreground: lab(8.34178% .607349 -2.12998);
+  --field-placeholder: lab(47.8738% 1.41454 -4.98644);
+  --field-hover: color-mix(in oklab, lab(100% 0 0) 90%, lab(8.34178% .607349 -2.12998) 2%);
+  --field-focus: lab(100% 0 0);
+  --field-border: transparent;
+  --field-border-hover: color-mix(in oklab, transparent 88%, lab(8.34178% .607349 -2.12998) 10%);
+  --field-border-focus: color-mix(in oklab, transparent 74%, lab(8.34178% .607349 -2.12998) 22%);
+  --segment: lab(100% 0 0);
+  --segment-foreground: lab(8.34178% .607349 -2.12998);
+  --scrollbar: color-mix(in oklch, lab(8.34178% .607349 -2.12998) 15%, transparent);
+  --backdrop: #00000080;
+  --surface-shadow: 0 2px 4px 0 #0000000a, 0 1px 2px 0 #0000000f, 0 0 1px 0 #0000000f;
+  --overlay-shadow: 0 2px 8px 0 #0000000f, 0 -6px 12px 0 #00000008, 0 14px 28px 0 #00000014;
+  --field-shadow: 0 2px 4px 0 #0000000a, 0 1px 2px 0 #0000000f, 0 0 1px 0 #0000000f;
+  --radius: 0.5rem;
+  --field-radius: calc(var(--radius) * 1.5);
+  --border-width: 1px;
+  --ring-offset-width: 2px;
+  --disabled-opacity: 0.5;
+  --cursor-interactive: pointer;
+  --cursor-disabled: not-allowed;
+  --ease-smooth: ease;
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-fluid: cubic-bezier(0.32, 0.72, 0, 1);
   color-scheme: light;
 }
 
 .dark {
-  --background: oklch(0.145 0.004 285.8);
-  --foreground: oklch(0.97 0 0);
-  --card: oklch(0.18 0.005 285.8);
-  --card-foreground: oklch(0.97 0 0);
-  --popover: oklch(0.2 0.006 285.9);
-  --popover-foreground: oklch(0.97 0 0);
-  --muted: oklch(0.24 0.006 286);
-  --muted-foreground: oklch(0.705 0.015 286.1);
-  --border: oklch(1 0 0 / 0.09);
-  --input: oklch(1 0 0 / 0.12);
-  --accent: oklch(0.66 0.15 255);
-  --accent-foreground: oklch(0.15 0.01 255);
-  --accent-soft: oklch(0.3 0.06 255);
-  --ring: oklch(0.66 0.15 255 / 0.5);
-  --success: oklch(0.7 0.14 155);
-  --warning: oklch(0.8 0.14 75);
-  --danger: oklch(0.68 0.18 25);
+  --background: lab(1.54547% .178337 -.64671);
+  --background-secondary: color-mix(in oklab, lab(1.54547% .178337 -.64671) 96%, lab(98.9676% -.0000298023 -.0000119209) 4%);
+  --background-tertiary: color-mix(in oklab, lab(1.54547% .178337 -.64671) 92%, lab(98.9676% -.0000298023 -.0000119209) 8%);
+  --background-inverse: lab(98.9676% -.0000298023 -.0000119209);
+  --foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --surface: lab(8.34178% .607349 -2.12998);
+  --surface-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --surface-hover: color-mix(in oklab, lab(8.34178% .607349 -2.12998) 92%, lab(98.9676% -.0000298023 -.0000119209) 8%);
+  --surface-secondary: lab(13.7794% .374213 -1.34113);
+  --surface-secondary-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --surface-tertiary: lab(15.5629% -.291005 -.84582);
+  --surface-tertiary-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --overlay: lab(8.34178% .607349 -2.12998);
+  --overlay-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --default: lab(15.7305% .613764 -2.16959);
+  --default-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --default-hover: color-mix(in oklab, lab(15.7305% .613764 -2.16959) 96%, lab(98.9676% -.0000298023 -.0000119209) 4%);
+  --default-soft: color-mix(in oklab, lab(15.7305% .613764 -2.16959) 50%, transparent);
+  --default-soft-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --default-soft-hover: color-mix(in oklab, lab(15.7305% .613764 -2.16959) 60%, transparent);
+  --muted: lab(65.6464% 1.53497 -5.42429);
+  --border: lab(16.4266% .613093 -2.16998);
+  --border-secondary: color-mix(in oklab, lab(8.34178% .607349 -2.12998) 78%, lab(98.9676% -.0000298023 -.0000119209) 22%);
+  --border-tertiary: color-mix(in oklab, lab(8.34178% .607349 -2.12998) 66%, lab(98.9676% -.0000298023 -.0000119209) 34%);
+  --separator: lab(12.9463% .616677 -2.16783);
+  --separator-secondary: color-mix(in oklab, lab(8.34178% .607349 -2.12998) 85%, lab(98.9676% -.0000298023 -.0000119209) 15%);
+  --separator-tertiary: color-mix(in oklab, lab(8.34178% .607349 -2.12998) 81%, lab(98.9676% -.0000298023 -.0000119209) 19%);
+  --link: lab(98.9676% -.0000298023 -.0000119209);
+  --accent-soft: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 12%, transparent);
+  --accent-soft-foreground: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 80%, lab(98.9676% -.0000298023 -.0000119209) 30%);
+  --accent-soft-hover: color-mix(in oklab, lab(54.5335% 3.31545 -66.5298) 16%, transparent);
+  --success-soft: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 12%, transparent);
+  --success-soft-foreground: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 80%, lab(98.9676% -.0000298023 -.0000119209) 30%);
+  --success-soft-hover: color-mix(in oklab, lab(71.4376% -59.4106 38.0321) 16%, transparent);
+  --warning: lab(79.1095% 16.747 59.9157);
+  --warning-hover: color-mix(in oklab, lab(79.1095% 16.747 59.9157) 90%, lab(8.34178% .607349 -2.12998) 10%);
+  --warning-soft: color-mix(in oklab, lab(79.1095% 16.747 59.9157) 12%, transparent);
+  --warning-soft-foreground: color-mix(in oklab, lab(79.1095% 16.747 59.9157) 80%, lab(98.9676% -.0000298023 -.0000119209) 30%);
+  --warning-soft-hover: color-mix(in oklab, lab(79.1095% 16.747 59.9157) 16%, transparent);
+  --danger: lab(50.9109% 62.2712 37.59);
+  --danger-hover: color-mix(in oklab, lab(50.9109% 62.2712 37.59) 90%, lab(98.9676% -.0000298023 -.0000119209) 10%);
+  --danger-soft: color-mix(in oklab, lab(50.9109% 62.2712 37.59) 15%, transparent);
+  --danger-soft-foreground: color-mix(in oklab, lab(50.9109% 62.2712 37.59) 80%, lab(98.9676% -.0000298023 -.0000119209) 30%);
+  --danger-soft-hover: color-mix(in oklab, lab(50.9109% 62.2712 37.59) 20%, transparent);
+  --field-background: lab(8.34178% .607349 -2.12998);
+  --field-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --field-placeholder: lab(65.6464% 1.53497 -5.42429);
+  --field-hover: color-mix(in oklab, lab(8.34178% .607349 -2.12998) 90%, lab(98.9676% -.0000298023 -.0000119209) 2%);
+  --field-focus: lab(8.34178% .607349 -2.12998);
+  --field-border-hover: color-mix(in oklab, transparent 88%, lab(98.9676% -.0000298023 -.0000119209) 10%);
+  --field-border-focus: color-mix(in oklab, transparent 74%, lab(98.9676% -.0000298023 -.0000119209) 22%);
+  --segment: lab(29.8929% 1.02498 -3.61326);
+  --segment-foreground: lab(98.9676% -.0000298023 -.0000119209);
+  --scrollbar: color-mix(in oklch, lab(98.9676% -.0000298023 -.0000119209) 15%, transparent);
+  --backdrop: #0009;
+  --surface-shadow: 0 0 0 0 transparent inset;
+  --overlay-shadow: 0 0 1px 0 #ffffff4d inset;
+  --field-shadow: 0 0 0 0 transparent inset;
   color-scheme: dark;
 }
 
 @theme inline {
-  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-background-inverse: var(--background-inverse);
   --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-secondary-foreground: var(--surface-secondary-foreground);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-surface-tertiary-foreground: var(--surface-tertiary-foreground);
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-default: var(--default);
+  --color-default-foreground: var(--default-foreground);
+  --color-default-hover: var(--default-hover);
+  --color-default-soft: var(--default-soft);
+  --color-default-soft-foreground: var(--default-soft-foreground);
+  --color-default-soft-hover: var(--default-soft-hover);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
-  --color-input: var(--input);
+  --color-border-secondary: var(--border-secondary);
+  --color-border-tertiary: var(--border-tertiary);
+  --color-separator: var(--separator);
+  --color-separator-secondary: var(--separator-secondary);
+  --color-separator-tertiary: var(--separator-tertiary);
+  --color-focus: var(--focus);
+  --color-link: var(--link);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
-  --color-ring: var(--ring);
+  --color-accent-soft-foreground: var(--accent-soft-foreground);
+  --color-accent-soft-hover: var(--accent-soft-hover);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-hover: var(--success-hover);
+  --color-success-soft: var(--success-soft);
+  --color-success-soft-foreground: var(--success-soft-foreground);
+  --color-success-soft-hover: var(--success-soft-hover);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-hover: var(--warning-hover);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-soft-foreground: var(--warning-soft-foreground);
+  --color-warning-soft-hover: var(--warning-soft-hover);
   --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-soft-foreground: var(--danger-soft-foreground);
+  --color-danger-soft-hover: var(--danger-soft-hover);
+  --color-field-background: var(--field-background);
+  --color-field-foreground: var(--field-foreground);
+  --color-field-placeholder: var(--field-placeholder);
+  --color-field-hover: var(--field-hover);
+  --color-field-focus: var(--field-focus);
+  --color-field-border: var(--field-border);
+  --color-field-border-hover: var(--field-border-hover);
+  --color-field-border-focus: var(--field-border-focus);
+  --color-segment: var(--segment);
+  --color-segment-foreground: var(--segment-foreground);
+  --color-scrollbar: var(--scrollbar);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-field: var(--field-radius);
 
-  --ease-out: var(--ease-out);
+  --shadow-surface: var(--surface-shadow);
+  --shadow-overlay: var(--overlay-shadow);
+  --shadow-field: var(--field-shadow);
+
+  --ease-smooth: var(--ease-smooth);
+  --ease-out-quart: var(--ease-out-quart);
+  --ease-out-fluid: var(--ease-out-fluid);
 }
 
 @layer base {
@@ -92,39 +253,15 @@
     font-family: var(--font-sans);
   }
   :focus-visible {
-    outline: 2px solid var(--color-ring);
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
+  }
+  body {
+    font-feature-settings: 'cv11';
   }
   ::selection {
     background: var(--color-accent-soft);
   }
-}
-
-/* ── Motion utilities ─────────────────────────────────────── */
-@theme {
-  --animate-shimmer: qh-shimmer var(--qh-shimmer-duration, 2s) linear infinite;
-  --animate-dot: qh-dot 1.2s var(--ease-out) infinite;
-}
-
-@keyframes qh-shimmer {
-  from { background-position: 100% center; }
-  to { background-position: 0% center; }
-}
-
-@keyframes qh-dot {
-  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-  40% { transform: translateY(-4px); opacity: 1; }
-}
-
-@keyframes qh-pop-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* Radix floating content: scale+fade from the trigger side. */
-.qh-pop {
-  transform-origin: var(--radix-tooltip-content-transform-origin, var(--radix-popover-content-transform-origin, var(--radix-hover-card-content-transform-origin, center)));
-  animation: qh-pop-in 150ms var(--ease-out);
 }
 
 /* ── Shiki dual theme ─────────────────────────────────────── */
@@ -165,7 +302,7 @@
   width: 1.5rem;
   margin-right: 1rem;
   text-align: right;
-  color: var(--color-muted-foreground);
+  color: var(--color-muted);
   opacity: 0.6;
   user-select: none;
 }

@@ -9,7 +9,7 @@ import {
   TextCursorInput,
   type LucideIcon,
 } from 'lucide-react'
-import { getDemo } from './demos'
+import { getComponentDoc, toKebab } from './demos'
 
 export type ComponentStatus = 'planned' | 'in-progress' | 'ready'
 
@@ -162,11 +162,13 @@ export const categories: Category[] = [
   },
 ]
 
-// A component counts as ready as soon as its demo file exists.
+// A component counts as ready as soon as its docs folder (meta.ts) exists.
 for (const category of categories) {
   for (const entry of category.components) {
-    if (getDemo(category.slug, entry.name)) entry.status = 'ready'
+    if (getComponentDoc(category.slug, entry.name)) entry.status = 'ready'
   }
 }
+
+export const componentRoute = (category: Category, entry: ComponentEntry) => `${category.slug}/${toKebab(entry.name)}`
 
 export const totalComponents = categories.reduce((n, c) => n + c.components.length, 0)

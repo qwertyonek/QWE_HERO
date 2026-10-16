@@ -6,6 +6,10 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/QWE_HERO/',
+  server: {
+    // The repo lives on sshfs, where inotify misses events (new folders in particular).
+    watch: { usePolling: true, interval: 300 },
+  },
   optimizeDeps: {
     // Pre-bundle lazily imported deps up front: discovering them at runtime
     // re-optimizes mid-session and leaves the open tab with two React copies.

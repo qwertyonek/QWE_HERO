@@ -5,7 +5,7 @@ import { DocsLayout } from '@/docs/docs-layout'
 export default function App() {
   return (
     <ThemeProvider>
-      <TooltipProvider delayDuration={300}>
+      <TooltipProvider>
         <DocsLayout />
       </TooltipProvider>
     </ThemeProvider>

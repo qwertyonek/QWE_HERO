@@ -1,94 +1,56 @@
-import type { ReactNode } from 'react'
-import { motion, type HTMLMotionProps } from 'motion/react'
-import { Sparkles } from 'lucide-react'
+import type { ComponentProps } from 'react'
+import { Avatar, type AvatarProps } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 
-export type ChatRole = 'user' | 'assistant'
-
-export interface ChatMessageProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
-  role: ChatRole
-  children?: ReactNode
-  /** Avatar element. Assistant gets a default mark; user shows none unless given. */
-  avatar?: ReactNode
-  name?: string
-  timestamp?: string
-  /** Rendered above the content (e.g. ChatAttachment list, ChainOfThought). */
-  header?: ReactNode
-  /** Toolbar under the message, e.g. <ChatMessageActions />. Revealed on hover. */
-  actions?: ReactNode
-  /** Keep actions visible instead of revealing them on hover. */
-  persistentActions?: boolean
+function Assistant({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-assistant" className={cn('chat-message--assistant', className)} {...props} />
 }
 
-export function ChatAvatar({ children, className }: { children?: ReactNode; className?: string }) {
+function User({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-user" className={cn('chat-message--user', className)} {...props} />
+}
+
+interface ChatMessageAvatarProps extends AvatarProps {
+  /** When false renders a same-size spacer, keeping grouped turns aligned. */
+  show?: boolean
+}
+
+function MessageAvatar({ show = true, className, ...props }: ChatMessageAvatarProps) {
+  if (!show) return <div data-slot="chat-message-avatar-spacer" className="chat-message__avatar-spacer" aria-hidden="true" />
   return (
-    <span
-      className={cn(
-        'flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-card text-xs font-medium [&_img]:size-full [&_img]:object-cover [&_svg]:size-3.5',
-        className,
-      )}
-    >
-      {children}
-    </span>
+    <div data-slot="chat-message-avatar" className="chat-message__avatar">
+      <Avatar size="md" className={cn('size-8', className)} {...props} />
+    </div>
   )
 }
 
-export function ChatMessage({
-  role,
-  children,
-  avatar,
-  name,
-  timestamp,
-  header,
-  actions,
-  persistentActions,
-  className,
-  ...props
-}: ChatMessageProps) {
-  const isUser = role === 'user'
-  const avatarNode =
-    avatar ?? (isUser ? null : <ChatAvatar className="bg-foreground text-background"><Sparkles /></ChatAvatar>)
+function Body({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-body" className={cn('chat-message__body', className)} {...props} />
+}
 
-  return (
-    <motion.div
-      data-role={role}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-      className={cn('group/message flex w-full gap-3', isUser && 'flex-row-reverse', className)}
-      {...props}
-    >
-      {avatarNode}
-      <div className={cn('flex min-w-0 flex-col gap-1.5', isUser ? 'max-w-[85%] items-end' : 'flex-1 items-start')}>
-        {(name || timestamp) && (
-          <div className="flex items-baseline gap-2 text-xs">
-            {name && <span className="font-medium">{name}</span>}
-            {timestamp && <time className="text-muted-foreground">{timestamp}</time>}
-          </div>
-        )}
-        {header}
-        {children !== undefined && (
-          <div
-            className={cn(
-              'min-w-0 text-sm leading-7',
-              isUser ? 'rounded-2xl rounded-br-md bg-muted px-4 py-2.5 whitespace-pre-wrap' : 'w-full',
-            )}
-          >
-            {children}
-          </div>
-        )}
-        {actions && (
-          <div
-            className={cn(
-              '-ml-1.5 transition-opacity duration-150',
-              !persistentActions &&
-                'opacity-0 group-hover/message:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100',
-            )}
-          >
-            {actions}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  )
+function Bubble({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-bubble" className={cn('chat-message__bubble', className)} {...props} />
+}
+
+function Content({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-content" className={cn('chat-message__content', className)} {...props} />
+}
+
+function Media({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-media" className={cn('chat-message__media', className)} {...props} />
+}
+
+function Actions({ className, ...props }: ComponentProps<'div'>) {
+  return <div data-slot="chat-message-actions" className={cn('chat-message__actions', className)} {...props} />
+}
+
+export const ChatMessage = {
+  Assistant,
+  User,
+  Avatar: MessageAvatar,
+  Body,
+  Bubble,
+  Content,
+  Media,
+  Actions,
 }

@@ -13,7 +13,7 @@ export function CopyButton({ value, className }: { value: string; className?: st
       aria-label={copied ? 'Скопировано' : 'Копировать код'}
       onClick={() => copy(value)}
       className={cn(
-        'inline-flex h-8 items-center gap-1.5 rounded-md border bg-card px-2.5 text-xs font-medium text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-muted hover:text-foreground active:scale-[0.97]',
+        'inline-flex h-8 items-center gap-1.5 rounded-md border bg-surface px-2.5 text-xs font-medium text-muted transition-[color,background-color,transform] duration-150 ease-out hover:bg-default hover:text-foreground active:scale-[0.97]',
         className,
       )}
     >
@@ -44,9 +44,9 @@ export function CodeViewer({ code, filename, lang }: { code: string; filename?: 
   }, [source, lang, filename])
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-muted/40">
+    <div className="overflow-hidden rounded-lg border bg-default/40">
       <div className="flex items-center justify-between border-b px-3 py-2">
-        <span className="truncate font-mono text-xs text-muted-foreground">{filename ?? 'example.tsx'}</span>
+        <span className="truncate font-mono text-xs text-muted">{filename ?? 'example.tsx'}</span>
         <CopyButton value={code} />
       </div>
       <div className="qh-code max-h-[480px] overflow-auto py-3 font-mono text-[13px] leading-6">

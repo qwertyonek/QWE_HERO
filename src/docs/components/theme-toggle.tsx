@@ -13,7 +13,7 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div role="radiogroup" aria-label="Тема" className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
+    <div role="radiogroup" aria-label="Тема" className="flex items-center gap-0.5 rounded-lg bg-default p-0.5">
       {options.map(({ value, label, icon: Icon }) => {
         const active = theme === value
         return (
@@ -27,13 +27,13 @@ export function ThemeToggle() {
             onClick={() => setTheme(value)}
             className={cn(
               'relative inline-flex size-7 items-center justify-center rounded-md transition-[color,transform] duration-150 ease-out active:scale-[0.97]',
-              active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+              active ? 'text-foreground' : 'text-muted hover:text-foreground',
             )}
           >
             {active && (
               <motion.span
                 layoutId="theme-pill"
-                className="absolute inset-0 rounded-md bg-card shadow-sm"
+                className="absolute inset-0 rounded-md bg-surface shadow-sm"
                 transition={{ type: 'spring', duration: 0.35, bounce: 0.15 }}
               />
             )}

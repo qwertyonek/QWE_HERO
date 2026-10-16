@@ -1,15 +1,13 @@
 import type { ComponentType } from 'react'
+import type { ComponentDoc } from './types'
 
-// Convention: src/docs/demos/<category>/<kebab-name>.demo.tsx renders the demo,
-// src/components/qwe-hero/<category>/<kebab-name>.tsx holds the component.
-// Dropping a new demo file in place makes it show up live via HMR.
-const demoModules = import.meta.glob<{ default: ComponentType }>('../demos/*/*.demo.tsx', { eager: true })
-const demoSources = import.meta.glob<string>('../demos/*/*.demo.tsx', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-})
-const componentSources = import.meta.glob<string>('../../components/qwe-hero/*/*.tsx', {
+// Layout: src/docs/demos/<category>/<kebab>/meta.ts + one <demo>.tsx per section.
+// Component sources: src/components/qwe-hero/<category>/<kebab>.tsx or <kebab>/*.tsx.
+// New files are picked up live via HMR.
+const metas = import.meta.glob<{ default: ComponentDoc }>('../demos/*/*/meta.ts', { eager: true })
+const demoModules = import.meta.glob<{ default: ComponentType }>('../demos/*/*/*.tsx', { eager: true })
+const demoSources = import.meta.glob<string>('../demos/*/*/*.tsx', { eager: true, query: '?raw', import: 'default' })
+const componentSources = import.meta.glob<string>('../../components/qwe-hero/*/**/*.{ts,tsx}', {
   eager: true,
   query: '?raw',
   import: 'default',
@@ -21,26 +19,50 @@ export const toKebab = (name: string) =>
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
     .toLowerCase()
 
-export interface DemoFile {
+export interface SourceFile {
   filename: string
   code: string
 }
 
-export interface DemoEntry {
+export interface ResolvedSection {
+  id: string
+  title: string
+  description?: string
   Demo: ComponentType
-  files: DemoFile[]
+  files: SourceFile[]
 }
 
-export function getDemo(category: string, name: string): DemoEntry | null {
-  const kebab = toKebab(name)
-  const demoPath = `../demos/${category}/${kebab}.demo.tsx`
-  const mod = demoModules[demoPath]
-  if (!mod) return null
+export interface ResolvedDoc extends ComponentDoc {
+  slug: string
+  sectionsResolved: ResolvedSection[]
+  sourceFiles: SourceFile[]
+}
 
-  const componentPath = `../../components/qwe-hero/${category}/${kebab}.tsx`
-  const files: DemoFile[] = [{ filename: `${kebab}.demo.tsx`, code: demoSources[demoPath] }]
-  if (componentSources[componentPath]) {
-    files.push({ filename: `components/qwe-hero/${category}/${kebab}.tsx`, code: componentSources[componentPath] })
-  }
-  return { Demo: mod.default, files }
+export function getComponentDoc(category: string, name: string): ResolvedDoc | null {
+  const slug = toKebab(name)
+  const base = `../demos/${category}/${slug}`
+  const meta = metas[`${base}/meta.ts`]?.default
+  if (!meta) return null
+
+  const prefix = `../../components/qwe-hero/${category}/`
+  const sourceFiles = Object.entries(componentSources)
+    .filter(([path]) => path === `${prefix}${slug}.tsx` || path.startsWith(`${prefix}${slug}/`))
+    .map(([path, code]) => ({ filename: path.replace('../../', ''), code }))
+
+  const sectionsResolved = meta.sections.flatMap((section) => {
+    const path = `${base}/${section.demo}.tsx`
+    const mod = demoModules[path]
+    if (!mod) return []
+    return [
+      {
+        id: section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        title: section.title,
+        description: section.description,
+        Demo: mod.default,
+        files: [{ filename: `${section.demo}.tsx`, code: demoSources[path] }, ...sourceFiles],
+      },
+    ]
+  })
+
+  return { ...meta, slug, sectionsResolved, sourceFiles }
 }

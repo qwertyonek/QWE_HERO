@@ -6,11 +6,15 @@ import { cn } from '@/lib/utils'
 import { SearchDialog } from './components/search-dialog'
 import { ThemeToggle } from './components/theme-toggle'
 import { useRoute } from './components/use-route'
+import { toKebab } from './data/demos'
 import { categories, totalComponents } from './data/registry'
 import { CategoryPage } from './pages/category-page'
+import { ComponentPage } from './pages/component-page'
+import { getComponentDoc } from './data/demos'
 import { HomePage } from './pages/home-page'
+import { BareDemo } from './pages/bare-demo'
 
-function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => void }) {
+function SidebarNav({ route, sub, onNavigate }: { route: string; sub?: string; onNavigate?: () => void }) {
   const links = [{ slug: '', title: 'Обзор', icon: Box, count: totalComponents }, ...categories.map((c) => ({
     slug: c.slug,
     title: c.title,
@@ -25,7 +29,7 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
         return (
           <div key={slug}>
             {i === 1 && (
-              <p className="px-3 pt-4 pb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <p className="px-3 pt-4 pb-2 text-xs font-medium tracking-wide text-muted uppercase">
                 Компоненты
               </p>
             )}
@@ -35,20 +39,44 @@ function SidebarNav({ route, onNavigate }: { route: string; onNavigate?: () => v
               aria-current={active ? 'page' : undefined}
               className={cn(
                 'relative flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm transition-[color,transform] duration-150 ease-out active:scale-[0.98]',
-                active ? 'font-medium text-foreground' : 'text-muted-foreground hover:text-foreground',
+                active ? 'font-medium text-foreground' : 'text-muted hover:text-foreground',
               )}
             >
               {active && (
                 <motion.span
                   layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-lg bg-muted"
+                  className="absolute inset-0 rounded-lg bg-default"
                   transition={{ type: 'spring', duration: 0.35, bounce: 0.15 }}
                 />
               )}
               <Icon className={cn('relative size-4', active && 'text-accent')} />
               <span className="relative flex-1">{title}</span>
-              <span className="relative font-mono text-[11px] text-muted-foreground tabular-nums">{count}</span>
+              <span className="relative font-mono text-[11px] text-muted tabular-nums">{count}</span>
             </a>
+            {active && slug && (
+              <div className="my-1 ml-5 space-y-0.5 border-l pl-2">
+                {categories
+                  .find((c) => c.slug === slug)!
+                  .components.filter((c) => c.status === 'ready')
+                  .map((c) => {
+                    const kebab = toKebab(c.name)
+                    return (
+                      <a
+                        key={c.name}
+                        href={`#/${slug}/${kebab}`}
+                        onClick={onNavigate}
+                        aria-current={sub === kebab ? 'page' : undefined}
+                        className={cn(
+                          'block rounded-md px-2 py-1 text-[13px] transition-colors',
+                          sub === kebab ? 'bg-default font-medium text-foreground' : 'text-muted hover:text-foreground',
+                        )}
+                      >
+                        {c.name}
+                      </a>
+                    )
+                  })}
+              </div>
+            )}
           </div>
         )
       })}
@@ -68,10 +96,13 @@ function Logo() {
 }
 
 export function DocsLayout() {
-  const [route, anchor] = useRoute().split('/')
+  const fullRoute = useRoute().split('?')[0]
+  const [route, componentSlug] = fullRoute.split('/')
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const category = categories.find((c) => c.slug === route)
+  const entry = category?.components.find((c) => toKebab(c.name) === componentSlug)
+  const doc = category && entry ? getComponentDoc(category.slug, entry.name) : null
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -85,10 +116,10 @@ export function DocsLayout() {
   }, [])
 
   useEffect(() => {
-    const target = anchor ? document.getElementById(anchor) : null
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    else window.scrollTo({ top: 0 })
-  }, [route, anchor])
+    window.scrollTo({ top: 0 })
+  }, [route, componentSlug])
+
+  if (route === 'demo') return <BareDemo path={fullRoute.split('/').slice(1)} />
 
   return (
     <div className="min-h-[100dvh]">
@@ -98,19 +129,19 @@ export function DocsLayout() {
             type="button"
             aria-label="Открыть меню"
             onClick={() => setMobileOpen(true)}
-            className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-transform duration-150 ease-out hover:bg-muted active:scale-[0.97] lg:hidden"
+            className="inline-flex size-8 items-center justify-center rounded-md text-muted transition-transform duration-150 ease-out hover:bg-default active:scale-[0.97] lg:hidden"
           >
             <Menu className="size-4" />
           </button>
           <Logo />
-          <span className="hidden rounded-full border px-2 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline">
+          <span className="hidden rounded-full border px-2 py-0.5 font-mono text-[10px] text-muted sm:inline">
             v0.0.0
           </span>
 
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
-            className="ml-auto flex h-8 w-full max-w-64 items-center gap-2 rounded-lg border bg-muted/50 px-3 text-sm text-muted-foreground transition-[background-color,transform] duration-150 ease-out hover:bg-muted active:scale-[0.98]"
+            className="ml-auto flex h-8 w-full max-w-64 items-center gap-2 rounded-lg border bg-default/50 px-3 text-sm text-muted transition-[background-color,transform] duration-150 ease-out hover:bg-default active:scale-[0.98]"
           >
             <Search className="size-3.5" />
             <span className="flex-1 text-left">Поиск…</span>
@@ -122,11 +153,11 @@ export function DocsLayout() {
 
       <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="sticky top-14 hidden h-[calc(100dvh-3.5rem)] overflow-y-auto border-r lg:block">
-          <SidebarNav route={route} />
+          <SidebarNav route={route} sub={componentSlug} />
         </aside>
 
         <main className="mx-auto w-full max-w-5xl px-4 py-8 lg:px-10 lg:py-12">
-          {category ? <CategoryPage category={category} /> : <HomePage />}
+          {category && doc ? <ComponentPage category={category} doc={doc} /> : category ? <CategoryPage category={category} /> : <HomePage />}
         </main>
       </div>
 
@@ -143,12 +174,12 @@ export function DocsLayout() {
               <Dialog.Description className="sr-only">Навигация по категориям</Dialog.Description>
               <Dialog.Close
                 aria-label="Закрыть меню"
-                className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted active:scale-[0.97]"
+                className="inline-flex size-8 items-center justify-center rounded-md text-muted hover:bg-default active:scale-[0.97]"
               >
                 <X className="size-4" />
               </Dialog.Close>
             </div>
-            <SidebarNav route={route} onNavigate={() => setMobileOpen(false)} />
+            <SidebarNav route={route} sub={componentSlug} onNavigate={() => setMobileOpen(false)} />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

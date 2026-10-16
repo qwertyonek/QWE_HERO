@@ -21,7 +21,7 @@ export function DevReadyBanner() {
       </span>
       <div className="min-w-0">
         <p className="font-semibold tracking-tight">Dev Server Ready</p>
-        <p className="truncate font-mono text-xs text-muted-foreground">
+        <p className="truncate font-mono text-xs text-muted">
           {import.meta.env.MODE} · React {reactVersion} · HMR {loadedAt}
         </p>
       </div>

@@ -3,10 +3,10 @@ import { ComponentPreview } from '../components/component-preview'
 import { CodeViewer } from '../components/code-viewer'
 import { DevReadyBanner } from '../components/dev-ready-banner'
 import bannerSource from '../components/dev-ready-banner.tsx?raw'
-import { getDemo } from '../data/demos'
+import { getComponentDoc } from '../data/demos'
 import { categories, totalComponents } from '../data/registry'
 
-const showcase = getDemo('ai', 'ChatConversation')
+const showcase = getComponentDoc('ai', 'ChatConversation')?.sectionsResolved.find((s) => s.id === 'full-chat')
 
 const quickStart = `npm install
 npm run dev     # http://localhost:5173/QWE_HERO/
@@ -18,11 +18,11 @@ export function HomePage() {
   return (
     <div className="space-y-14">
       <section className="space-y-5">
-        <p className="font-mono text-xs text-muted-foreground">by qwertyonek</p>
+        <p className="font-mono text-xs text-muted">by qwertyonek</p>
         <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
           Pro-компоненты в стиле shadcn/ui.
         </h1>
-        <p className="max-w-2xl text-lg text-pretty text-muted-foreground">
+        <p className="max-w-2xl text-lg text-pretty text-muted">
           Clean-room реализация каталога HeroUI Pro на React 19, Tailwind CSS v4, Radix UI и motion. Копируй код,
           меняй под себя, никакого вендор-лока.
         </p>
@@ -33,7 +33,7 @@ export function HomePage() {
             ['Готово', ready],
           ].map(([label, value]) => (
             <div key={label}>
-              <dt className="text-xs text-muted-foreground">{label}</dt>
+              <dt className="text-xs text-muted">{label}</dt>
               <dd className="font-mono text-2xl font-medium tabular-nums">{value}</dd>
             </div>
           ))}
@@ -43,7 +43,7 @@ export function HomePage() {
       {showcase && (
         <ComponentPreview
           title="ChatConversation"
-          description="Живой пример: рассуждения, вызов инструмента, стриминг Markdown с цитатами, стоп и перегенерация."
+          description="Живой пример полного чата из категории AI."
           files={showcase.files}
         >
           <showcase.Demo />
@@ -70,19 +70,19 @@ export function HomePage() {
             <a
               key={c.slug}
               href={`#/${c.slug}`}
-              className="group flex gap-4 rounded-xl border bg-card p-4 transition-[border-color,transform] duration-150 ease-out hover:border-foreground/20 active:scale-[0.99]"
+              className="group flex gap-4 rounded-xl border bg-surface p-4 transition-[border-color,transform] duration-150 ease-out hover:border-foreground/20 active:scale-[0.99]"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors group-hover:text-accent">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-default text-muted transition-colors group-hover:text-accent">
                 <c.icon className="size-4" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-2 font-medium">
                   {c.title}
-                  <span className="font-mono text-xs text-muted-foreground">{c.components.length}</span>
+                  <span className="font-mono text-xs text-muted">{c.components.length}</span>
                 </span>
-                <span className="mt-0.5 block text-sm text-muted-foreground">{c.description}</span>
+                <span className="mt-0.5 block text-sm text-muted">{c.description}</span>
               </span>
-              <ArrowRight className="size-4 shrink-0 self-center text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+              <ArrowRight className="size-4 shrink-0 self-center text-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
           ))}
         </div>
