@@ -3,7 +3,10 @@ import { ComponentPreview } from '../components/component-preview'
 import { CodeViewer } from '../components/code-viewer'
 import { DevReadyBanner } from '../components/dev-ready-banner'
 import bannerSource from '../components/dev-ready-banner.tsx?raw'
+import { getDemo } from '../data/demos'
 import { categories, totalComponents } from '../data/registry'
+
+const showcase = getDemo('ai', 'ChatConversation')
 
 const quickStart = `npm install
 npm run dev     # http://localhost:5173/QWE_HERO/
@@ -37,11 +40,20 @@ export function HomePage() {
         </dl>
       </section>
 
+      {showcase && (
+        <ComponentPreview
+          title="ChatConversation"
+          description="Живой пример: рассуждения, вызов инструмента, стриминг Markdown с цитатами, стоп и перегенерация."
+          files={showcase.files}
+        >
+          <showcase.Demo />
+        </ComponentPreview>
+      )}
+
       <ComponentPreview
         title="Статус окружения"
         description="Тестовая плашка: правь dev-ready-banner.tsx и смотри, как HMR обновляет превью."
-        code={bannerSource}
-        filename="src/docs/components/dev-ready-banner.tsx"
+        files={[{ filename: 'src/docs/components/dev-ready-banner.tsx', code: bannerSource }]}
       >
         <DevReadyBanner />
       </ComponentPreview>

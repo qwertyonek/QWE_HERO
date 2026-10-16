@@ -99,3 +99,73 @@
     background: var(--color-accent-soft);
   }
 }
+
+/* ── Motion utilities ─────────────────────────────────────── */
+@theme {
+  --animate-shimmer: qh-shimmer var(--qh-shimmer-duration, 2s) linear infinite;
+  --animate-dot: qh-dot 1.2s var(--ease-out) infinite;
+}
+
+@keyframes qh-shimmer {
+  from { background-position: 100% center; }
+  to { background-position: 0% center; }
+}
+
+@keyframes qh-dot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-4px); opacity: 1; }
+}
+
+@keyframes qh-pop-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Radix floating content: scale+fade from the trigger side. */
+.qh-pop {
+  transform-origin: var(--radix-tooltip-content-transform-origin, var(--radix-popover-content-transform-origin, var(--radix-hover-card-content-transform-origin, center)));
+  animation: qh-pop-in 150ms var(--ease-out);
+}
+
+/* ── Shiki dual theme ─────────────────────────────────────── */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+}
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
+}
+.shiki {
+  background: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Line-numbered code (docs CodeViewer). */
+.qh-code pre {
+  counter-reset: qh-line;
+  min-width: max-content;
+}
+.qh-code .line {
+  counter-increment: qh-line;
+  display: inline-block;
+  width: 100%;
+  padding-inline: 1rem;
+}
+.qh-code .line::before {
+  content: counter(qh-line);
+  display: inline-block;
+  width: 1.5rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: var(--color-muted-foreground);
+  opacity: 0.6;
+  user-select: none;
+}

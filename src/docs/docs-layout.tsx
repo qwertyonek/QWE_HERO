@@ -68,7 +68,7 @@ function Logo() {
 }
 
 export function DocsLayout() {
-  const route = useRoute()
+  const [route, anchor] = useRoute().split('/')
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const category = categories.find((c) => c.slug === route)
@@ -85,8 +85,10 @@ export function DocsLayout() {
   }, [])
 
   useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [route])
+    const target = anchor ? document.getElementById(anchor) : null
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    else window.scrollTo({ top: 0 })
+  }, [route, anchor])
 
   return (
     <div className="min-h-[100dvh]">

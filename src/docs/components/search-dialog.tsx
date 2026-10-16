@@ -19,7 +19,7 @@ const items: SearchItem[] = categories.flatMap((c) => [
     id: `${c.slug}/${comp.name}`,
     label: comp.name,
     hint: c.title,
-    route: c.slug,
+    route: `${c.slug}/${comp.name}`,
     isCategory: false,
   })),
 ])
@@ -86,7 +86,7 @@ export function SearchDialog({ open, onOpenChange }: { open: boolean; onOpenChan
               <li className="px-3 py-8 text-center text-sm text-muted-foreground">Ничего не найдено</li>
             )}
             {results.map((item, i) => {
-              const category = categories.find((c) => c.slug === item.route)
+              const category = categories.find((c) => c.slug === item.route.split('/')[0])
               const Icon = item.isCategory && category ? category.icon : Box
               return (
                 <li

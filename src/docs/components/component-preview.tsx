@@ -14,21 +14,23 @@ const viewports = {
 type Viewport = keyof typeof viewports
 
 interface ComponentPreviewProps {
+  id?: string
   title: string
   description?: string
-  code: string
-  filename?: string
+  files: { filename: string; code: string }[]
   children: ReactNode
 }
 
-export function ComponentPreview({ title, description, code, filename, children }: ComponentPreviewProps) {
+export function ComponentPreview({ id, title, description, files, children }: ComponentPreviewProps) {
   const [viewport, setViewport] = useState<Viewport>('desktop')
+  const [fileIndex, setFileIndex] = useState(0)
+  const file = files[Math.min(fileIndex, files.length - 1)]
   const width = viewports[viewport].width
 
   return (
-    <section className="space-y-3">
+    <section id={id} className="scroll-mt-20 space-y-3">
       <div>
-        <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+        <h3 className="font-mono text-lg font-semibold tracking-tight">{title}</h3>
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
 
@@ -89,12 +91,29 @@ export function ComponentPreview({ title, description, code, filename, children 
             className="mx-auto overflow-hidden rounded-lg border bg-background transition-[max-width] duration-300 ease-out"
             style={{ maxWidth: width ?? '100%' }}
           >
-            <div className="flex min-h-[280px] items-center justify-center p-6">{children}</div>
+            <div className="flex min-h-[280px] items-center justify-center p-4 sm:p-6">{children}</div>
           </div>
         </Tabs.Content>
 
-        <Tabs.Content value="code" className="p-3">
-          <CodeViewer code={code} filename={filename} />
+        <Tabs.Content value="code" className="space-y-2 p-3">
+          {files.length > 1 && (
+            <div className="flex flex-wrap gap-1">
+              {files.map((f, i) => (
+                <button
+                  key={f.filename}
+                  type="button"
+                  onClick={() => setFileIndex(i)}
+                  className={cn(
+                    'rounded-md px-2.5 py-1 font-mono text-xs transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.97]',
+                    i === fileIndex ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {f.filename.split('/').pop()}
+                </button>
+              ))}
+            </div>
+          )}
+          <CodeViewer code={file.code} filename={file.filename} />
         </Tabs.Content>
       </Tabs.Root>
     </section>
